@@ -1,7 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { formatMoney } from "../data";
 
-const Home = ({ playerName, setPlayerName }) => {
+const Home = ({ playerName, setPlayerName, history }) => {
   const navigate = useNavigate();
+  const record = history.reduce(
+    (best, game) => (!best || game.prize > best.prize ? game : best),
+    null
+  );
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -18,6 +23,7 @@ const Home = ({ playerName, setPlayerName }) => {
           cao nhất.
         </p>
       </div>
+
       <div className="home-grid">
         <section className="panel rules-panel">
           <h2>Luật chơi</h2>
@@ -25,8 +31,10 @@ const Home = ({ playerName, setPlayerName }) => {
             <li>Mỗi câu có 30 giây để trả lời.</li>
             <li>Trả lời đúng để đi tiếp và tăng tiền thưởng.</li>
             <li>Câu 5, 10 và 15 là các mốc an toàn.</li>
+            <li>Bạn có thể dùng trợ giúp hoặc dừng cuộc chơi bất cứ lúc nào.</li>
           </ul>
         </section>
+
         <section className="panel start-panel">
           <h2>Sẵn sàng chưa?</h2>
           <form onSubmit={handleSubmit}>
@@ -46,6 +54,12 @@ const Home = ({ playerName, setPlayerName }) => {
           </form>
         </section>
       </div>
+
+      {record && (
+        <p className="record-line">
+          Kỷ lục: {formatMoney(record.prize)} – {record.name}
+        </p>
+      )}
     </section>
   );
 };

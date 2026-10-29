@@ -8,9 +8,12 @@ const MoneyLadder = ({ currentQuestionNumber }) => (
         const questionNumber = PRIZES.length - index;
         const isMilestone = MILESTONES.includes(questionNumber);
         const isCurrent = currentQuestionNumber === questionNumber;
+        const gridColumn = Math.floor((questionNumber - 1) / 5) + 1;
+        const gridRow = 5 - ((questionNumber - 1) % 5);
         return (
           <li
             key={questionNumber}
+            style={{ gridColumn, gridRow }}
             className={[
               "money-ladder__step",
               isMilestone ? "money-ladder__step--milestone" : "",

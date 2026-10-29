@@ -18,7 +18,7 @@ const Layout = ({ loading, loadError }) => (
         <Outlet />
       )}
     </main>
-    <footer className="site-footer">Ai là triệu phú · Lập trình Web</footer>
+    <footer className="site-footer">Mai Hoàng Phúc</footer>
   </>
 );
 

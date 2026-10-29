@@ -54,7 +54,7 @@ const QuestionBank = ({ questions }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredQuestions.map((question, index) => (
+            {filteredQuestions.map((question) => (
               <tr key={question.id}>
                 <td>{question.id}</td>
                 <td>{LEVELS[question.level]}</td>
