@@ -10,6 +10,7 @@ export const getResult = (match) => {
 
 export const isValidGoals = (value) => {
   if (value === '' || value === null || value === undefined) return false;
+  if (typeof value === 'string' && value.trim() === '') return false;
   const goals = Number(value);
   return Number.isInteger(goals) && goals >= 0 && goals <= MAX_GOALS;
 };
@@ -84,4 +85,41 @@ export const calcMatchStats = (matches) => {
     : Math.round((stats.goals / stats.count) * 100) / 100;
 
   return stats;
+};
+
+export const calcNeeded = (standings, teamId, target, remaining) => {
+  const team = standings.find((item) => String(item.id) === String(teamId));
+  const targetPoints = Number(target);
+  const remainingMatches = Number(remaining);
+
+  if (
+    !team ||
+    target === '' ||
+    (typeof target === 'string' && target.trim() === '') ||
+    !Number.isInteger(targetPoints) ||
+    targetPoints < 0 ||
+    remaining === '' ||
+    (typeof remaining === 'string' && remaining.trim() === '') ||
+    !Number.isInteger(remainingMatches) ||
+    remainingMatches < 1
+  ) {
+    return {
+      kind: 'invalid',
+      message: 'Hãy chọn đội, nhập số điểm mục tiêu (từ 0) và số trận còn lại (từ 1)',
+    };
+  }
+
+  const need = targetPoints - team.points;
+  if (need <= 0) {
+    return { kind: 'done', message: 'Đội đã đạt mục tiêu' };
+  }
+  if (need > 3 * remainingMatches) {
+    return { kind: 'impossible', message: 'Không thể đạt mục tiêu này' };
+  }
+
+  const minimumWins = Math.max(0, Math.ceil((need - remainingMatches) / 2));
+  return {
+    kind: 'possible',
+    message: `Cần thêm ${need} điểm ở ${remainingMatches} trận còn lại, tối thiểu ${minimumWins} trận thắng`,
+  };
 };

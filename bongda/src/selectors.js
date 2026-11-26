@@ -1,7 +1,10 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { calcStandings } from './utils';
 
+export const selectMatches = (state) => state.matches;
+export const selectGoal = (state) => state.goal;
+
 export const selectStandings = createSelector(
-  [(state) => state.matches],
+  [selectMatches],
   (matches) => calcStandings(matches),
 );

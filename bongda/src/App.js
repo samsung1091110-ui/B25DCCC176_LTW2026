@@ -1,30 +1,32 @@
 import './App.css';
-import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { MAX_GOALS, RESULT_LABELS, ROUNDS, TEAMS, formatDiff } from './data';
-import matchesReducer from './matchesReducer';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { MAX_GOALS, RESULT_LABELS, ROUNDS, formatDiff } from './data';
+import { removeMatch, restoreMatch, setGoals, setMatches } from './features/matchesSlice';
 import useFetch from './hooks/useFetch';
 import { calcMatchStats, calcStandings, getResult, getTeamName, isValidGoals } from './utils';
-import { selectStandings } from './selectors';
+import { selectMatches, selectStandings } from './selectors';
+import { useNotice } from './context/NoticeContext';
+import { useTheme } from './context/ThemeContext';
+import AddMatchForm from './components/AddMatchForm';
+import GoalPlanner from './components/GoalPlanner';
 import StandingsTable from './components/StandingsTable';
 
 const App = () => {
-  const [matches, dispatch] = useReducer(matchesReducer, []);
+  const matches = useSelector(selectMatches);
+  const standings = useSelector(selectStandings);
+  const dispatch = useDispatch();
+  const { showNotice } = useNotice();
+  const { theme, toggleTheme } = useTheme();
   const [roundFilter, setRoundFilter] = useState('all');
-  const [homeTeam, setHomeTeam] = useState('');
-  const [awayTeam, setAwayTeam] = useState('');
-  const [round, setRound] = useState('1');
-  const [homeGoals, setHomeGoals] = useState('');
-  const [awayGoals, setAwayGoals] = useState('');
-  const [formErrors, setFormErrors] = useState({});
   const [deletedMatch, setDeletedMatch] = useState(null);
-  const homeSelectRef = useRef(null);
   const { data, loading, error } = useFetch('/data/matches.json');
 
   useEffect(() => {
     if (Array.isArray(data)) {
-      dispatch({ type: 'LOAD', payload: data });
+      dispatch(setMatches(data));
     }
-  }, [data]);
+  }, [data, dispatch]);
 
   const visibleMatches = useMemo(
     () => (roundFilter === 'all'
@@ -34,68 +36,27 @@ const App = () => {
   );
   const stats = useMemo(() => calcMatchStats(visibleMatches), [visibleMatches]);
   const visibleStandings = useMemo(() => calcStandings(visibleMatches), [visibleMatches]);
-  const standings = selectStandings({ matches });
   const leader = visibleMatches.length > 0 ? visibleStandings[0] : null;
-
-  const handleAddMatch = (event) => {
-    event.preventDefault();
-
-    if (!homeTeam) {
-      setFormErrors({ homeTeam: 'Hãy chọn đội nhà' });
-      return;
-    }
-    if (!awayTeam) {
-      setFormErrors({ awayTeam: 'Hãy chọn đội khách' });
-      return;
-    }
-    if (homeTeam === awayTeam) {
-      setFormErrors({ awayTeam: 'Hai đội phải khác nhau' });
-      return;
-    }
-    const homeId = Number(homeTeam);
-    const awayId = Number(awayTeam);
-    if (matches.some((match) =>
-      (match.home === homeId && match.away === awayId) ||
-      (match.home === awayId && match.away === homeId))) {
-      setFormErrors({ awayTeam: 'Hai đội đã đá với nhau rồi' });
-      return;
-    }
-    if (!isValidGoals(homeGoals) || !isValidGoals(awayGoals)) {
-      setFormErrors({
-        ...(!isValidGoals(homeGoals) && { homeGoals: 'Số bàn thắng phải là số nguyên từ 0 đến 20' }),
-        ...(!isValidGoals(awayGoals) && { awayGoals: 'Số bàn thắng phải là số nguyên từ 0 đến 20' }),
-      });
-      return;
-    }
-
-    dispatch({
-      type: 'ADD',
-      payload: {
-        round: Number(round),
-        home: homeId,
-        away: awayId,
-        homeGoals: Number(homeGoals),
-        awayGoals: Number(awayGoals),
-      },
-    });
-    setHomeTeam('');
-    setAwayTeam('');
-    setRound('1');
-    setHomeGoals('');
-    setAwayGoals('');
-    setFormErrors({});
-    homeSelectRef.current?.focus();
-  };
 
   const handleRemove = (match) => {
     setDeletedMatch(match);
-    dispatch({ type: 'REMOVE', payload: match.id });
+    dispatch(removeMatch(match.id));
+    showNotice(`Đã xóa trận ${getTeamName(match.home)} - ${getTeamName(match.away)}`);
   };
 
   const handleUndo = () => {
     if (!deletedMatch) return;
-    dispatch({ type: 'RESTORE', payload: deletedMatch });
+    dispatch(restoreMatch(deletedMatch));
     setDeletedMatch(null);
+  };
+
+  const updateMatchGoal = (match, field, goals) => {
+    if (!isValidGoals(goals)) return;
+    dispatch(setGoals({
+      id: match.id,
+      homeGoals: field === 'homeGoals' ? goals : match.homeGoals,
+      awayGoals: field === 'awayGoals' ? goals : match.awayGoals,
+    }));
   };
 
   const exportStandings = () => {
@@ -127,13 +88,16 @@ const App = () => {
   };
 
   return (
-    <div className="app" data-build="TH03">
+    <div className={`app ${theme}`} data-build="TH03">
       <header className="site-header">
         <div className="header-inner">
           <div className="brand-mark" aria-hidden="true">BĐ</div>
-          <div>
+          <div className="header-copy">
             <p className="eyebrow">LỊCH THI ĐẤU</p>
             <h1>Giải bóng đá khoa</h1>
+            <button className="button theme-toggle" type="button" onClick={toggleTheme}>
+              Chế độ {theme === 'light' ? 'tối' : 'sáng'}
+            </button>
           </div>
           <span className="header-note">Vòng tròn một lượt</span>
         </div>
@@ -227,7 +191,7 @@ const App = () => {
                             aria-label={`Bàn thắng nhà ${homeName} - ${awayName}`}
                             onChange={(event) => {
                               if (isValidGoals(event.target.valueAsNumber)) {
-                                dispatch({ type: 'SET_GOALS', payload: { id: match.id, field: 'homeGoals', goals: event.target.valueAsNumber } });
+                                updateMatchGoal(match, 'homeGoals', event.target.valueAsNumber);
                               }
                             }}
                           />
@@ -242,7 +206,7 @@ const App = () => {
                             aria-label={`Bàn thắng khách ${homeName} - ${awayName}`}
                             onChange={(event) => {
                               if (isValidGoals(event.target.valueAsNumber)) {
-                                dispatch({ type: 'SET_GOALS', payload: { id: match.id, field: 'awayGoals', goals: event.target.valueAsNumber } });
+                                updateMatchGoal(match, 'awayGoals', event.target.valueAsNumber);
                               }
                             }}
                           />
@@ -281,49 +245,8 @@ const App = () => {
           <StandingsTable standings={standings} />
         </section>
 
-        <section className="section-card form-section" aria-labelledby="add-match-title">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">CẬP NHẬT LỊCH</p>
-              <h2 id="add-match-title">Thêm trận đấu</h2>
-            </div>
-          </div>
-          <form className="match-form" noValidate onSubmit={handleAddMatch}>
-            <label>
-              <span>Vòng</span>
-              <select value={round} onChange={(event) => setRound(event.target.value)}>
-                {ROUNDS.map((item) => <option key={item} value={item}>Vòng {item}</option>)}
-              </select>
-            </label>
-            <label>
-              <span>Đội nhà</span>
-              <select ref={homeSelectRef} value={homeTeam} aria-invalid={Boolean(formErrors.homeTeam)} onChange={(event) => { setHomeTeam(event.target.value); setFormErrors({}); }}>
-                <option value="">-- Chọn đội --</option>
-                {TEAMS.map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}
-              </select>
-              {formErrors.homeTeam && <span className="field-error" role="alert">{formErrors.homeTeam}</span>}
-            </label>
-            <label>
-              <span>Đội khách</span>
-              <select value={awayTeam} aria-invalid={Boolean(formErrors.awayTeam)} onChange={(event) => { setAwayTeam(event.target.value); setFormErrors({}); }}>
-                <option value="">-- Chọn đội --</option>
-                {TEAMS.map((team) => <option key={team.id} value={team.id}>{team.name}</option>)}
-              </select>
-              {formErrors.awayTeam && <span className="field-error" role="alert">{formErrors.awayTeam}</span>}
-            </label>
-            <label>
-              <span>Bàn thắng đội nhà</span>
-              <input type="number" min="0" max={MAX_GOALS} value={homeGoals} aria-invalid={Boolean(formErrors.homeGoals)} onChange={(event) => { setHomeGoals(event.target.value); setFormErrors({}); }} />
-              {formErrors.homeGoals && <span className="field-error" role="alert">{formErrors.homeGoals}</span>}
-            </label>
-            <label>
-              <span>Bàn thắng đội khách</span>
-              <input type="number" min="0" max={MAX_GOALS} value={awayGoals} aria-invalid={Boolean(formErrors.awayGoals)} onChange={(event) => { setAwayGoals(event.target.value); setFormErrors({}); }} />
-              {formErrors.awayGoals && <span className="field-error" role="alert">{formErrors.awayGoals}</span>}
-            </label>
-            <button className="button button-primary" type="submit">Thêm trận</button>
-          </form>
-        </section>
+        <GoalPlanner standings={standings} />
+        <AddMatchForm />
       </main>
     </div>
   );
