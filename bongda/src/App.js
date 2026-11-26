@@ -70,7 +70,10 @@ const App = () => {
       getTeamName(match.away).toLowerCase().includes(query));
   }, [roundMatches, debouncedSearch]);
   const stats = useMemo(() => calcMatchStats(roundMatches), [roundMatches]);
-  const leader = matches.length > 0 ? standings[0] : null;
+  const leader = useMemo(
+    () => (matches.length > 0 ? standings[0] : null),
+    [matches.length, standings],
+  );
   const showLoading = !hasSavedMatches && loading;
   const showFetchError = !hasSavedMatches && error;
 
@@ -99,8 +102,12 @@ const App = () => {
     if (!Array.isArray(data)) return;
     dispatch(setMatches(data));
     setDeletedMatch(null);
-    showNotice('Đã đặt lại dữ liệu mẫu.');
+    showNotice('Đã đặt lại dữ liệu mẫu');
   }, [data, dispatch, showNotice]);
+
+  const handleTeamShift = useCallback((event) => {
+    setSearch(event.target.value);
+  }, [setSearch]);
 
   const handleUndo = () => {
     if (!deletedMatch) return;
@@ -234,7 +241,7 @@ const App = () => {
                 value={search}
                 aria-label="Tìm đội"
                 placeholder="Nhập tên đội..."
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={handleTeamShift}
               />
             </label>
             <span className="result-count">Tìm thấy {visibleMatches.length} trận</span>
