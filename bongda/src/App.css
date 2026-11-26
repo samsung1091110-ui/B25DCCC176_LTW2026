@@ -36,10 +36,10 @@
 
 .header-inner h1 {
   margin: 2px 0 0;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: 'Segoe UI', Arial, sans-serif;
   font-size: clamp(1.45rem, 3vw, 2rem);
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: normal;
 }
 
 .header-copy {
@@ -117,9 +117,10 @@
 
 .section-heading h2 {
   margin: 4px 0 0;
-  color: #19332e;
-  font-family: Georgia, 'Times New Roman', serif;
+  color: #173b70;
+  font-family: 'Segoe UI', Arial, sans-serif;
   font-size: 1.45rem;
+  letter-spacing: normal;
 }
 
 .round-picker,
@@ -739,4 +740,173 @@ tbody tr:last-child td {
   .goal-controls {
     grid-template-columns: 1fr;
   }
+}
+
+.app.light {
+  color: #1f2937;
+  background: #eff6ff;
+}
+
+.site-header {
+  background: #174ea6;
+  border-bottom-color: #93c5fd;
+}
+
+.brand-mark {
+  color: #dbeafe;
+}
+
+.header-inner .eyebrow {
+  color: #dbeafe;
+}
+
+.header-note {
+  color: #e5efff;
+}
+
+.section-card {
+  border-color: #d7e5f7;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(30, 64, 112, 0.045);
+}
+
+.section-heading h2 {
+  color: #173b70;
+}
+
+.eyebrow,
+.result-count,
+.render-count {
+  color: #64748b;
+}
+
+.round-picker,
+.match-form label,
+.goal-controls label,
+.search-field {
+  color: #475569;
+}
+
+.stat-card {
+  border-color: #dbeafe;
+  background: #f5f9ff;
+}
+
+.stat-card span {
+  color: #64748b;
+}
+
+.stat-card strong {
+  color: #1d4ed8;
+}
+
+.result-distribution {
+  border-top-color: #dbeafe;
+}
+
+.result-distribution h3,
+.distribution-line {
+  color: #475569;
+}
+
+.distribution-track {
+  background: #e7eef8;
+}
+
+.distribution-bar {
+  background: #3b82f6;
+}
+
+.table-scroll {
+  border-color: #dbe5f2;
+}
+
+table {
+  color: #1f2937;
+}
+
+th,
+td {
+  border-bottom-color: #e2e8f0;
+}
+
+thead th {
+  color: #475569;
+  background: #eff6ff;
+}
+
+.matches-table tbody tr:hover,
+.standings-table tbody tr:hover {
+  background: #f7faff;
+}
+
+.score-input,
+.search-field input,
+.match-form input,
+select {
+  border-color: #cbd5e1;
+  color: #1f2937;
+}
+
+.score-input {
+  color: #1d4ed8;
+}
+
+.round-badge {
+  color: #1e4f91;
+  background: #e8f1fd;
+}
+
+.result-label {
+  color: #475569;
+}
+
+.result-home,
+.result-away {
+  color: #1d4ed8;
+}
+
+.button-primary {
+  background: #2563eb;
+}
+
+.button-primary:hover {
+  background: #1d4ed8;
+}
+
+.button-secondary {
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.button-secondary:hover {
+  border-color: #60a5fa;
+  background: #eff6ff;
+}
+
+.goal-result {
+  color: #1e40af;
+  background: #eff6ff;
+}
+
+.goal-done {
+  color: #1e40af;
+}
+
+.notice,
+.empty-state {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+.notice-toast {
+  border-color: #bfdbfe;
+  color: #1e40af;
+  background: #eff6ff;
+}
+
+.notice-toast.dark {
+  border-color: #3b5b8a;
+  color: #dbeafe;
+  background: #1e3558;
 }

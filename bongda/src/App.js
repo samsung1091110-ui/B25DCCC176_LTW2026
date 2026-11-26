@@ -147,7 +147,7 @@ const App = () => {
     <div className={`app ${theme}`} data-build="TH03">
       <header className="site-header">
         <div className="header-inner">
-          <div className="brand-mark" aria-hidden="true">BĐ</div>
+          <div className="brand-mark" aria-hidden="true">MHP</div>
           <div className="header-copy">
             <p className="eyebrow">LỊCH THI ĐẤU</p>
             <h1>Giải bóng đá khoa</h1>
