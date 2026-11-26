@@ -10,15 +10,13 @@ import { NoticeProvider } from './context/NoticeContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <ThemeProvider>
-      <NoticeProvider>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </NoticeProvider>
-    </ThemeProvider>
-  </React.StrictMode>
+  <ThemeProvider>
+    <NoticeProvider>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </NoticeProvider>
+  </ThemeProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

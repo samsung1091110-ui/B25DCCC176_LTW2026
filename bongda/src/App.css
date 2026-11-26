@@ -107,6 +107,14 @@
   margin-bottom: 20px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .section-heading h2 {
   margin: 4px 0 0;
   color: #19332e;
@@ -180,6 +188,78 @@ button:focus-visible {
   font-size: 1.02rem;
 }
 
+.result-distribution {
+  display: grid;
+  gap: 4px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e1e9e5;
+}
+
+.result-distribution h3 {
+  margin: 0 0 5px;
+  color: #52625b;
+  font-size: 0.82rem;
+}
+
+.distribution-line {
+  display: flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: #52625b;
+  font-size: 0.82rem;
+}
+
+.distribution-track {
+  display: block;
+  width: 120px;
+  height: 10px;
+  border-radius: 6px;
+  background: #edf2ef;
+}
+
+.distribution-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #4b916c;
+}
+
+.search-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 14px;
+}
+
+.search-field {
+  display: grid;
+  width: min(100%, 400px);
+  gap: 7px;
+  color: #4e5c57;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.search-field input {
+  min-height: 40px;
+  padding: 8px 11px;
+  border: 1px solid #cbd6d2;
+  border-radius: 7px;
+  color: #243b35;
+  background: #fff;
+  font: inherit;
+}
+
+.result-count {
+  padding-bottom: 10px;
+  color: #718079;
+  font-size: 0.82rem;
+}
+
 .table-scroll {
   overflow-x: auto;
   border: 1px solid #e0e7e4;
@@ -244,6 +324,11 @@ tbody tr:last-child td {
   text-align: center;
 }
 
+.render-count {
+  color: #718079;
+  text-align: center;
+}
+
 .round-badge {
   display: inline-grid;
   min-width: 28px;
@@ -287,6 +372,11 @@ tbody tr:last-child td {
 
 .button:active {
   transform: translateY(1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .button-primary {
@@ -434,12 +524,32 @@ tbody tr:last-child td {
 }
 
 .app.dark .stat-card span,
-.app.dark .header-note {
+.app.dark .header-note,
+.app.dark .result-count,
+.app.dark .render-count {
   color: #c2cad6;
 }
 
 .app.dark .table-scroll {
   border-color: #40495a;
+}
+
+.app.dark .result-distribution {
+  border-top-color: #3b4454;
+}
+
+.app.dark .result-distribution h3,
+.app.dark .distribution-line,
+.app.dark .search-field {
+  color: #c2cad6;
+}
+
+.app.dark .distribution-track {
+  background: #3b4454;
+}
+
+.app.dark .distribution-bar {
+  background: #61a47d;
 }
 
 .app.dark table {
@@ -483,7 +593,8 @@ tbody tr:last-child td {
 .app.dark select,
 .app.dark .match-form input,
 .app.dark .score-input,
-.app.dark .goal-controls input {
+.app.dark .goal-controls input,
+.app.dark .search-field input {
   border-color: #505a6d;
   color: #e8eaf0;
   background: #1f2430;
@@ -578,6 +689,20 @@ tbody tr:last-child td {
 
   .section-heading {
     align-items: flex-start;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .search-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .result-count {
+    padding-bottom: 0;
   }
 
   .round-picker {

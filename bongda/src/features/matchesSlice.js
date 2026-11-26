@@ -10,11 +10,13 @@ const matchesSlice = createSlice({
       state.push({ ...action.payload, id: nextId });
     },
     removeMatch: (state, action) => state.filter((match) => match.id !== action.payload),
-    setGoals: (state, action) => state.map((match) => (
-      match.id === action.payload.id
-        ? { ...match, homeGoals: action.payload.homeGoals, awayGoals: action.payload.awayGoals }
-        : match
-    )),
+    setGoals: (state, action) => {
+      const match = state.find((item) => item.id === action.payload.id);
+      if (match) {
+        match.homeGoals = action.payload.homeGoals;
+        match.awayGoals = action.payload.awayGoals;
+      }
+    },
     restoreMatch: (state, action) => [...state, { ...action.payload }].sort((a, b) => a.id - b.id),
   },
 });
